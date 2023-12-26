@@ -25,6 +25,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.toquete.stopclenching.model.AlarmItem
 import com.toquete.stopclenching.utils.AndroidAlarmScheduler
 
@@ -58,11 +61,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun GreetingView(
     onScheduleButtonClick: (AlarmItem) -> Unit,
     onCancelButtonClick: (AlarmItem) -> Unit
 ) {
+    val notificationPermissionState = rememberPermissionState(android.Manifest.permission.POST_NOTIFICATIONS)
     var from by remember {
         mutableStateOf("08:00")
     }
@@ -95,7 +100,13 @@ fun GreetingView(
         Spacer(modifier = Modifier.size(16.dp))
         Row {
             Button(
-                onClick = { onScheduleButtonClick(AlarmItem(from, to, interval.toLong())) },
+                onClick = {
+                    if (notificationPermissionState.status.isGranted) {
+                        onScheduleButtonClick(AlarmItem(from, to, interval.toLong()))
+                    } else {
+                        notificationPermissionState.launchPermissionRequest()
+                    }
+                },
             ) {
                 Text("Schedule")
             }

@@ -23,6 +23,7 @@ class AlarmReceiver : BroadcastReceiver() {
             .setContentTitle("Stop clenching")
             .setContentText("Time to relax your jaw")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
 
         with(NotificationManagerCompat.from(context)) {
             if (ContextCompat.checkSelfPermission(
