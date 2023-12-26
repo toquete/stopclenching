@@ -1,5 +1,5 @@
 import SwiftUI
-import MultiPlatformFramework
+import MultiPlatformLibrary
 
 struct ContentView: View {
 	let greet = Greeting().greet()

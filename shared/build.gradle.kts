@@ -16,12 +16,6 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
-    targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget::class.java).all {
-        binaries.withType(org.jetbrains.kotlin.gradle.plugin.mpp.Framework::class.java).all {
-            export(libs.moko.mvvm.flow.resources)
-        }
-    }
-
     cocoapods {
         summary = "Stop Clenching Shared Module"
         homepage = "Link to the Shared Module homepage"
@@ -29,17 +23,22 @@ kotlin {
         ios.deploymentTarget = "16.0"
         podfile = project.file("../iosApp/Podfile")
         framework {
-            baseName = "MultiPlatformFramework"
-            isStatic = true
+            baseName = "MultiPlatformLibrary"
+            isStatic = false
+            export(libs.moko.mvvm.core)
+            export(libs.moko.mvvm.flow)
         }
     }
     
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlinx.datetime)
+            api(libs.moko.mvvm.core)
+            api(libs.moko.mvvm.flow)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.moko.mvvm.test)
         }
         androidMain.dependencies {
             implementation(libs.androidx.core.ktx)
@@ -53,9 +52,4 @@ android {
     defaultConfig {
         minSdk = 24
     }
-}
-
-dependencies {
-    commonMainApi(libs.moko.mvvm.flow.resources)
-    commonTestImplementation(libs.moko.mvvm.test)
 }
