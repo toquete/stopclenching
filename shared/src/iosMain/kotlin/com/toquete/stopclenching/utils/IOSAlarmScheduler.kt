@@ -3,13 +3,16 @@ package com.toquete.stopclenching.utils
 import com.toquete.stopclenching.model.AlarmItem
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.toLocalTime
+import platform.Foundation.NSCalendar
 import platform.Foundation.NSDateComponents
+import platform.Foundation.NSUUID
 import platform.UserNotifications.UNCalendarNotificationTrigger
 import platform.UserNotifications.UNMutableNotificationContent
 import platform.UserNotifications.UNNotificationRequest
 import platform.UserNotifications.UNUserNotificationCenter
 
 class IOSAlarmScheduler : AlarmScheduler {
+
     override fun schedule(item: AlarmItem) {
         val initialTime = item.from.toLocalTime().toMillisecondOfDay()
         val finalTime = item.to.toLocalTime().toMillisecondOfDay()
@@ -23,6 +26,7 @@ class IOSAlarmScheduler : AlarmScheduler {
 
         for (time in initialTime until finalTime step item.intervalMillis.toInt()) {
             val date = NSDateComponents().apply {
+                calendar = NSCalendar.currentCalendar
                 hour = LocalTime.fromMillisecondOfDay(time).hour.toLong()
                 minute = LocalTime.fromMillisecondOfDay(time).minute.toLong()
             }
@@ -30,7 +34,7 @@ class IOSAlarmScheduler : AlarmScheduler {
             val trigger = UNCalendarNotificationTrigger.triggerWithDateMatchingComponents(date, repeats = true)
 
             val request = UNNotificationRequest.requestWithIdentifier(
-                item.hashCode().toString(),
+                NSUUID.UUID().UUIDString,
                 content = content,
                 trigger = trigger
             )
