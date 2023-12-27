@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -51,11 +52,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun getPendingIntent(item: AlarmItem): PendingIntent {
+    private fun getPendingIntent(time: Long): PendingIntent {
+        val intent = Intent(applicationContext, AlarmReceiver::class.java).apply {
+            data = "${AlarmReceiver.SCHEME}://$time".toUri()
+        }
         return PendingIntent.getBroadcast(
             applicationContext,
-            item.hashCode(),
-            Intent(applicationContext, AlarmReceiver::class.java),
+            AlarmReceiver.REQUEST_CODE,
+            intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
     }

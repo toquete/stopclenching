@@ -9,7 +9,7 @@ import java.util.Calendar
 
 class AndroidAlarmScheduler(
     context: Context,
-    private val pendingIntent: (AlarmItem) -> PendingIntent
+    private val pendingIntent: (Long) -> PendingIntent
 ) : AlarmScheduler {
 
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
@@ -23,13 +23,18 @@ class AndroidAlarmScheduler(
                 AlarmManager.RTC_WAKEUP,
                 time,
                 AlarmManager.INTERVAL_DAY,
-                pendingIntent(item)
+                pendingIntent(time)
             )
         }
     }
 
     override fun cancel(item: AlarmItem) {
-        alarmManager?.cancel(pendingIntent(item))
+        val initialTimeInMillis = getTimeInMillis(item.from)
+        val finalTimeInMillis = getTimeInMillis(item.to)
+
+        for (time in initialTimeInMillis until finalTimeInMillis step item.intervalMillis) {
+            alarmManager?.cancel(pendingIntent(time))
+        }
     }
 
     private fun getTimeInMillis(time: String): Long {
