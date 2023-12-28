@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,13 +31,18 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.toquete.stopclenching.model.AlarmItem
+import com.toquete.stopclenching.presentation.main.MainViewModel
 import com.toquete.stopclenching.utils.AndroidAlarmScheduler
+import dev.icerock.moko.mvvm.createViewModelFactory
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val scheduler = AndroidAlarmScheduler(applicationContext, ::getPendingIntent)
+        val viewModel by viewModels<MainViewModel>(
+            factoryProducer = { createViewModelFactory { MainViewModel(scheduler) } }
+        )
         setContent {
             MyApplicationTheme {
                 Surface(
@@ -44,8 +50,8 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     GreetingView(
-                        onScheduleButtonClick = { scheduler.schedule(it) },
-                        onCancelButtonClick = { scheduler.cancel(it) }
+                        onScheduleButtonClick = viewModel::onScheduleAlarmClick,
+                        onCancelButtonClick = viewModel::onCancelAlarmClick
                     )
                 }
             }
@@ -79,7 +85,7 @@ fun GreetingView(
         mutableStateOf("17:00")
     }
     var interval by remember {
-        mutableStateOf("60000")
+        mutableStateOf("3600000")
     }
     Column(
         modifier = Modifier.fillMaxSize(),

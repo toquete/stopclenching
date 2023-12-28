@@ -1,12 +1,12 @@
 import SwiftUI
 import MultiPlatformLibrary
+import mokoMvvmFlowSwiftUI
 
 struct ContentView: View {
     @State private var initialTime = "08:00"
     @State private var finalTime = "17:00"
     @State private var interval = "3600000"
-    
-    private let scheduler = IOSAlarmScheduler()
+    @ObservedObject var viewModel: MainViewModel = MainViewModel(scheduler: IOSAlarmScheduler())
 
 	var body: some View {
         VStack {
@@ -21,11 +21,12 @@ struct ContentView: View {
             }
             HStack {
                 Button(action: {
-                    scheduler.schedule(item: AlarmItem(from: initialTime, to: finalTime, intervalMillis: Int64(interval) ?? 0))
+                    viewModel.onScheduleAlarmClick(alarmItem: AlarmItem(from: initialTime, to: finalTime, intervalMillis: Int64(interval) ?? 0))
                 }, label: {
                     Text("Schedule")
                 })
-                Button(action: { scheduler.cancel(item: AlarmItem(from: initialTime, to: finalTime, intervalMillis: Int64(interval) ?? 0))
+                Button(action: { 
+                    viewModel.onCancelAlarmClick(alarmItem: AlarmItem(from: initialTime, to: finalTime, intervalMillis: Int64(interval) ?? 0))
                 }, label: {
                     Text("Cancel")
                 })
