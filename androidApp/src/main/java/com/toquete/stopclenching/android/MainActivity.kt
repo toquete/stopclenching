@@ -93,7 +93,7 @@ fun GreetingView(
             Button(
                 onClick = {
                     if (notificationPermissionState.status.isGranted) {
-                        onScheduleButtonClick(AlarmItem(from, to, interval.toLong()))
+                        onScheduleButtonClick(AlarmItem(from, to, interval.toInt()))
                     } else {
                         notificationPermissionState.launchPermissionRequest()
                     }
@@ -101,7 +101,7 @@ fun GreetingView(
             ) {
                 Text("Schedule")
             }
-            Button(onClick = { onCancelButtonClick(AlarmItem(from, to, interval.toLong())) }) {
+            Button(onClick = { onCancelButtonClick(AlarmItem(from, to, interval.toInt())) }) {
                 Text("Cancel")
             }
         }

@@ -11,34 +11,34 @@ import java.util.Calendar
 class AndroidAlarmScheduler(
     private val context: Context,
     private val alarmAction: AlarmAction
-) : AlarmScheduler {
+) : AlarmScheduler() {
 
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
-
-    override fun schedule(item: AlarmItem) {
-        val initialTimeInMillis = getTimeInMillis(item.from)
-        val finalTimeInMillis = getTimeInMillis(item.to)
-
-        for (time in initialTimeInMillis until finalTimeInMillis step item.intervalMillis) {
-            alarmManager?.setRepeating(
-                AlarmManager.RTC_WAKEUP,
-                time,
-                AlarmManager.INTERVAL_DAY,
-                getPendingIntent(time)
-            )
-        }
-    }
 
     override fun cancel(item: AlarmItem) {
         val initialTimeInMillis = getTimeInMillis(item.from)
         val finalTimeInMillis = getTimeInMillis(item.to)
 
-        for (time in initialTimeInMillis until finalTimeInMillis step item.intervalMillis) {
+        for (time in initialTimeInMillis until finalTimeInMillis step item.intervalMillis.toInt()) {
             alarmManager?.cancel(getPendingIntent(time))
         }
     }
 
-    private fun getTimeInMillis(time: String): Long {
+    override fun setDailyRepeating(triggerTimeAtMillis: Int) {
+        alarmManager?.run {
+            val pendingIntent = getPendingIntent(triggerTimeAtMillis)
+
+            cancel(pendingIntent)
+            setRepeating(
+                AlarmManager.RTC_WAKEUP,
+                triggerTimeAtMillis.toLong(),
+                AlarmManager.INTERVAL_DAY,
+                pendingIntent
+            )
+        }
+    }
+
+    override fun getTimeInMillis(time: String): Int {
         val localTime = time.toLocalTime()
         val calendar = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
@@ -46,20 +46,20 @@ class AndroidAlarmScheduler(
             set(Calendar.MINUTE, localTime.minute)
         }
 
-        return calendar.timeInMillis
+        return calendar.timeInMillis.toInt()
     }
 
-    private fun getPendingIntent(time: Long): PendingIntent {
+    private fun getPendingIntent(timeAtMillis: Int): PendingIntent {
         return PendingIntent.getBroadcast(
             context,
             REQUEST_CODE,
-            alarmAction.getIntent(time),
+            alarmAction.getIntent(timeAtMillis),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
     }
 
     interface AlarmAction {
-        fun getIntent(time: Long): Intent
+        fun getIntent(timeAtMillis: Int): Intent
     }
 
     companion object {

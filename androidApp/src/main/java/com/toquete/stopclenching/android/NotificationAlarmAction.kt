@@ -9,9 +9,9 @@ class NotificationAlarmAction(
     private val context: Context
 ) : AndroidAlarmScheduler.AlarmAction {
 
-    override fun getIntent(time: Long): Intent {
+    override fun getIntent(timeAtMillis: Int): Intent {
         return Intent(context, AlarmReceiver::class.java).apply {
-            data = "${AlarmReceiver.SCHEME}://$time".toUri()
+            data = "${AlarmReceiver.SCHEME}://$timeAtMillis".toUri()
         }
     }
 }
