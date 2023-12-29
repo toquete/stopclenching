@@ -5,7 +5,7 @@ import com.toquete.stopclenching.presentation.main.MainViewModel
 import com.toquete.stopclenching.utils.AlarmScheduler
 import com.toquete.stopclenching.utils.AndroidAlarmScheduler
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
 
 val androidModule = module {
@@ -16,5 +16,5 @@ val androidModule = module {
             alarmManager = androidContext().getSystemService(AlarmManager::class.java)
         )
     }
-    viewModel { MainViewModel(get()) }
+    viewModelOf(::MainViewModel)
 }
