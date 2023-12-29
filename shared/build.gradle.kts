@@ -33,6 +33,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlinx.datetime)
+            implementation(libs.koin.core)
             api(libs.moko.mvvm.core)
             api(libs.moko.mvvm.flow)
         }
@@ -42,6 +43,7 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.androidx.core.ktx)
+            implementation(libs.koin.android)
         }
     }
 }

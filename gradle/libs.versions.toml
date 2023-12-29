@@ -10,6 +10,7 @@ androidx-lifecycleViewModelCompose = "2.6.1"
 moko = "0.16.1"
 kotlinx-datetime= "0.5.0"
 accompanist = "0.33.2-alpha"
+koin = "3.5.3"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -26,6 +27,8 @@ moko-mvvm-flow = { module = "dev.icerock.moko:mvvm-flow", version.ref = "moko" }
 moko-mvvm-test = { module = "dev.icerock.moko:mvvm-test", version.ref = "moko" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

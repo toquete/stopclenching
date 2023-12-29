@@ -1,11 +1,8 @@
 package com.toquete.stopclenching.android
 
-import android.app.PendingIntent
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,23 +23,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.toquete.stopclenching.model.AlarmItem
 import com.toquete.stopclenching.presentation.main.MainViewModel
-import com.toquete.stopclenching.utils.AndroidAlarmScheduler
-import dev.icerock.moko.mvvm.createViewModelFactory
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
 
+    private val mainViewModel: MainViewModel by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val scheduler = AndroidAlarmScheduler(applicationContext, ::getPendingIntent)
-        val viewModel by viewModels<MainViewModel>(
-            factoryProducer = { createViewModelFactory { MainViewModel(scheduler) } }
-        )
         setContent {
             MyApplicationTheme {
                 Surface(
@@ -50,24 +43,12 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     GreetingView(
-                        onScheduleButtonClick = viewModel::onScheduleAlarmClick,
-                        onCancelButtonClick = viewModel::onCancelAlarmClick
+                        onScheduleButtonClick = mainViewModel::onScheduleAlarmClick,
+                        onCancelButtonClick = mainViewModel::onCancelAlarmClick
                     )
                 }
             }
         }
-    }
-
-    private fun getPendingIntent(time: Long): PendingIntent {
-        val intent = Intent(applicationContext, AlarmReceiver::class.java).apply {
-            data = "${AlarmReceiver.SCHEME}://$time".toUri()
-        }
-        return PendingIntent.getBroadcast(
-            applicationContext,
-            AlarmReceiver.REQUEST_CODE,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
     }
 }
 

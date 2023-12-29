@@ -6,7 +6,7 @@ struct ContentView: View {
     @State private var initialTime = "08:00"
     @State private var finalTime = "17:00"
     @State private var interval = "3600000"
-    @ObservedObject var viewModel: MainViewModel = MainViewModel(scheduler: IOSAlarmScheduler())
+    @ObservedObject var viewModel: MainViewModel = MainHelper().getMainViewModel()
 
 	var body: some View {
         VStack {

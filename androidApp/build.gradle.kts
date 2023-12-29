@@ -47,5 +47,6 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.accompanist.permissions)
+    implementation(libs.koin.android)
     debugImplementation(libs.compose.ui.tooling)
 }

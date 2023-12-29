@@ -3,13 +3,14 @@ package com.toquete.stopclenching.utils
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import com.toquete.stopclenching.model.AlarmItem
 import kotlinx.datetime.toLocalTime
 import java.util.Calendar
 
 class AndroidAlarmScheduler(
-    context: Context,
-    private val pendingIntent: (Long) -> PendingIntent
+    private val context: Context,
+    private val alarmAction: AlarmAction
 ) : AlarmScheduler {
 
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
@@ -23,7 +24,7 @@ class AndroidAlarmScheduler(
                 AlarmManager.RTC_WAKEUP,
                 time,
                 AlarmManager.INTERVAL_DAY,
-                pendingIntent(time)
+                getPendingIntent(time)
             )
         }
     }
@@ -33,7 +34,7 @@ class AndroidAlarmScheduler(
         val finalTimeInMillis = getTimeInMillis(item.to)
 
         for (time in initialTimeInMillis until finalTimeInMillis step item.intervalMillis) {
-            alarmManager?.cancel(pendingIntent(time))
+            alarmManager?.cancel(getPendingIntent(time))
         }
     }
 
@@ -46,5 +47,22 @@ class AndroidAlarmScheduler(
         }
 
         return calendar.timeInMillis
+    }
+
+    private fun getPendingIntent(time: Long): PendingIntent {
+        return PendingIntent.getBroadcast(
+            context,
+            REQUEST_CODE,
+            alarmAction.getIntent(time),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
+    interface AlarmAction {
+        fun getIntent(time: Long): Intent
+    }
+
+    companion object {
+        const val REQUEST_CODE = 1000
     }
 }
