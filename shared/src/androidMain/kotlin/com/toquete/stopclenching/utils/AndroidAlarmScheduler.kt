@@ -10,16 +10,15 @@ import java.util.Calendar
 
 class AndroidAlarmScheduler(
     private val context: Context,
-    private val alarmAction: AlarmAction
+    private val alarmAction: AlarmAction,
+    private val alarmManager: AlarmManager?
 ) : AlarmScheduler() {
-
-    private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
     override fun cancel(item: AlarmItem) {
         val initialTimeInMillis = getTimeInMillis(item.from)
         val finalTimeInMillis = getTimeInMillis(item.to)
 
-        for (time in initialTimeInMillis until finalTimeInMillis step item.intervalMillis.toInt()) {
+        for (time in initialTimeInMillis until finalTimeInMillis step item.intervalMillis) {
             alarmManager?.cancel(getPendingIntent(time))
         }
     }
