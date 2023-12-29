@@ -1,7 +1,9 @@
 package com.toquete.stopclenching.model
 
+import kotlinx.datetime.LocalTime
+
 data class AlarmItem(
-    val from: String,
-    val to: String,
+    val from: LocalTime,
+    val to: LocalTime,
     val intervalMillis: Int
 )

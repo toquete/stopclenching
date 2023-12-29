@@ -1,6 +1,7 @@
 package com.toquete.stopclenching.utils
 
 import com.toquete.stopclenching.model.AlarmItem
+import kotlinx.datetime.LocalTime
 
 abstract class AlarmScheduler {
 
@@ -8,7 +9,7 @@ abstract class AlarmScheduler {
         val initialTimeInMillis = getTimeInMillis(item.from)
         val finalTimeInMillis = getTimeInMillis(item.to)
 
-        for (time in initialTimeInMillis until finalTimeInMillis step item.intervalMillis.toInt()) {
+        for (time in initialTimeInMillis until finalTimeInMillis step item.intervalMillis) {
             setDailyRepeating(time)
         }
     }
@@ -17,5 +18,5 @@ abstract class AlarmScheduler {
 
     abstract fun setDailyRepeating(triggerTimeAtMillis: Int)
 
-    abstract fun getTimeInMillis(time: String): Int
+    abstract fun getTimeInMillis(time: LocalTime): Int
 }

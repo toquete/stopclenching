@@ -2,7 +2,6 @@ package com.toquete.stopclenching.utils
 
 import com.toquete.stopclenching.model.AlarmItem
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.toLocalTime
 import platform.Foundation.NSCalendar
 import platform.Foundation.NSDateComponents
 import platform.Foundation.NSUUID
@@ -46,7 +45,7 @@ class IOSAlarmScheduler : AlarmScheduler() {
         )
     }
 
-    override fun getTimeInMillis(time: String): Int {
-        return time.toLocalTime().toMillisecondOfDay()
+    override fun getTimeInMillis(time: LocalTime): Int {
+        return time.toMillisecondOfDay()
     }
 }

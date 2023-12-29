@@ -5,7 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.toquete.stopclenching.model.AlarmItem
-import kotlinx.datetime.toLocalTime
+import kotlinx.datetime.LocalTime
 import java.util.Calendar
 
 class AndroidAlarmScheduler(
@@ -37,12 +37,11 @@ class AndroidAlarmScheduler(
         }
     }
 
-    override fun getTimeInMillis(time: String): Int {
-        val localTime = time.toLocalTime()
+    override fun getTimeInMillis(time: LocalTime): Int {
         val calendar = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, localTime.hour)
-            set(Calendar.MINUTE, localTime.minute)
+            set(Calendar.HOUR_OF_DAY, time.hour)
+            set(Calendar.MINUTE, time.minute)
         }
 
         return calendar.timeInMillis.toInt()

@@ -26,13 +26,10 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.toquete.stopclenching.model.AlarmItem
 import com.toquete.stopclenching.presentation.main.MainViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
-
-    private val mainViewModel: MainViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,10 +39,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    GreetingView(
-                        onScheduleButtonClick = mainViewModel::onScheduleAlarmClick,
-                        onCancelButtonClick = mainViewModel::onCancelAlarmClick
-                    )
+                    GreetingView()
                 }
             }
         }
@@ -55,8 +49,7 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun GreetingView(
-    onScheduleButtonClick: (AlarmItem) -> Unit,
-    onCancelButtonClick: (AlarmItem) -> Unit
+    viewModel: MainViewModel = koinViewModel()
 ) {
     val notificationPermissionState = rememberPermissionState(android.Manifest.permission.POST_NOTIFICATIONS)
     var from by remember {
@@ -93,7 +86,7 @@ fun GreetingView(
             Button(
                 onClick = {
                     if (notificationPermissionState.status.isGranted) {
-                        onScheduleButtonClick(AlarmItem(from, to, interval.toInt()))
+                        viewModel.onScheduleAlarmClick(from, to, interval.toInt())
                     } else {
                         notificationPermissionState.launchPermissionRequest()
                     }
@@ -101,7 +94,7 @@ fun GreetingView(
             ) {
                 Text("Schedule")
             }
-            Button(onClick = { onCancelButtonClick(AlarmItem(from, to, interval.toInt())) }) {
+            Button(onClick = { viewModel.onCancelAlarmClick(from, to, interval.toInt()) }) {
                 Text("Cancel")
             }
         }
@@ -112,6 +105,6 @@ fun GreetingView(
 @Composable
 fun DefaultPreview() {
     MyApplicationTheme {
-        GreetingView({}, {})
+        GreetingView()
     }
 }

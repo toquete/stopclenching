@@ -21,12 +21,12 @@ struct ContentView: View {
             }
             HStack {
                 Button(action: {
-                    viewModel.onScheduleAlarmClick(alarmItem: AlarmItem(from: initialTime, to: finalTime, intervalMillis: Int32(interval) ?? 0))
+                    viewModel.onScheduleAlarmClick(from: initialTime, to: finalTime, intervalMillis: Int32(interval) ?? 0)
                 }, label: {
                     Text("Schedule")
                 })
                 Button(action: { 
-                    viewModel.onCancelAlarmClick(alarmItem: AlarmItem(from: initialTime, to: finalTime, intervalMillis: Int32(interval) ?? 0))
+                    viewModel.onCancelAlarmClick(from: initialTime, to: finalTime, intervalMillis: Int32(interval) ?? 0)
                 }, label: {
                     Text("Cancel")
                 })

@@ -48,5 +48,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.accompanist.permissions)
     implementation(libs.koin.android)
+    implementation(libs.koin.androix.compose)
     debugImplementation(libs.compose.ui.tooling)
 }
