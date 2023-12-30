@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.toquete.stopclenching.Resources
 
 private const val CHANNEL_ID = "alarm_channel_id"
 private const val NOTIFICATION_ID = 1
@@ -19,7 +20,7 @@ class AlarmReceiver : BroadcastReceiver() {
         createNotificationChannel(context)
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_notification)
+            .setSmallIcon(Resources.images.notification_important.drawableResId)
             .setContentTitle("Stop clenching")
             .setContentText("Time to relax your jaw")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

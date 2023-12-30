@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlinCocoapods)
     alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.mokoResources)
 }
 
 kotlin {
@@ -27,6 +28,7 @@ kotlin {
             isStatic = false
             export(libs.moko.mvvm.core)
             export(libs.moko.mvvm.flow)
+            export(libs.moko.resources)
         }
     }
     
@@ -36,14 +38,31 @@ kotlin {
             implementation(libs.koin.core)
             api(libs.moko.mvvm.core)
             api(libs.moko.mvvm.flow)
+            api(libs.moko.resources)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.moko.mvvm.test)
+            implementation(libs.moko.resources.test)
         }
         androidMain.dependencies {
             implementation(libs.androidx.core.ktx)
             implementation(libs.koin.android)
+        }
+        iosX64 {
+            getting {
+                resources.srcDirs("build/generated/moko/iosX64Main/src")
+            }
+        }
+        iosArm64 {
+            getting {
+                resources.srcDirs("build/generated/moko/iosArm64Main/src")
+            }
+        }
+        iosSimulatorArm64 {
+            getting {
+                resources.srcDirs("build/generated/moko/iosSimulatorArm64Main/src")
+            }
         }
     }
 }
@@ -54,4 +73,12 @@ android {
     defaultConfig {
         minSdk = 24
     }
+    sourceSets {
+        getByName("main").java.srcDirs("build/generated/moko/androidMain/src")
+    }
+}
+
+multiplatformResources {
+    multiplatformResourcesPackage = "com.toquete.stopclenching"
+    multiplatformResourcesClassName = "Resources"
 }
