@@ -1,7 +1,6 @@
 package com.toquete.stopclenching.android
 
 import android.app.Application
-import com.toquete.stopclenching.android.di.appModule
 import com.toquete.stopclenching.di.androidModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -14,7 +13,7 @@ class StopClenchingApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@StopClenchingApplication)
-            modules(appModule + androidModule)
+            modules(androidModule)
         }
     }
 }

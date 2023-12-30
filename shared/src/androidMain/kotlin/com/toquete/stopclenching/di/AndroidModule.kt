@@ -12,7 +12,6 @@ val androidModule = module {
     single<AlarmScheduler> {
         AndroidAlarmScheduler(
             context = androidContext(),
-            alarmAction = get(),
             alarmManager = androidContext().getSystemService(AlarmManager::class.java)
         )
     }

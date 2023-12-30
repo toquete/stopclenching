@@ -54,7 +54,6 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        const val REQUEST_CODE = 1000
         const val SCHEME = "alarm"
     }
 }
