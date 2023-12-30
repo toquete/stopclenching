@@ -3,6 +3,7 @@ package com.toquete.stopclenching.android
 import android.content.Context
 import android.content.Intent
 import androidx.core.net.toUri
+import com.toquete.stopclenching.infrastructure.receiver.AlarmReceiver
 import com.toquete.stopclenching.utils.AndroidAlarmScheduler
 
 class NotificationAlarmAction(

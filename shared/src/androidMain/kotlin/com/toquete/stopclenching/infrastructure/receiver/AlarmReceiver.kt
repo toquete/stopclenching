@@ -1,4 +1,4 @@
-package com.toquete.stopclenching.android
+package com.toquete.stopclenching.infrastructure.receiver
 
 import android.app.NotificationChannel
 import android.app.NotificationManager

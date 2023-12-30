@@ -72,6 +72,7 @@ android {
     compileSdk = 34
     defaultConfig {
         minSdk = 24
+        targetSdk = 34
     }
     sourceSets {
         getByName("main").java.srcDirs("build/generated/moko/androidMain/src")
