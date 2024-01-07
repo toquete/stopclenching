@@ -31,12 +31,19 @@ class AndroidAlarmScheduler(
                 return
             }
 
+            val fixedTriggerTimeAtMillis = if (System.currentTimeMillis() > triggerTimeAtMillis) {
+                triggerTimeAtMillis + AlarmManager.INTERVAL_DAY
+            } else {
+                triggerTimeAtMillis
+            }
+
             val pendingIntent = getPendingIntent(triggerTimeAtMillis)
 
-            cancel(pendingIntent)
+            val pendingIntent = getPendingIntent(fixedTriggerTimeAtMillis)
+
             setRepeating(
                 AlarmManager.RTC_WAKEUP,
-                triggerTimeAtMillis,
+                fixedTriggerTimeAtMillis,
                 AlarmManager.INTERVAL_DAY,
                 pendingIntent
             )
@@ -49,6 +56,7 @@ class AndroidAlarmScheduler(
             timeInMillis = System.currentTimeMillis()
             set(Calendar.HOUR_OF_DAY, localTime.hour)
             set(Calendar.MINUTE, localTime.minute)
+            set(Calendar.SECOND, localTime.second)
         }
 
         return calendar.timeInMillis
