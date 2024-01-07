@@ -3,37 +3,48 @@ package com.toquete.stopclenching.presentation.main
 import com.toquete.stopclenching.model.AlarmItem
 import com.toquete.stopclenching.utils.AlarmScheduler
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
-import kotlinx.datetime.toLocalTime
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val scheduler: AlarmScheduler
 ) : ViewModel() {
 
+    private val _event = Channel<MainEvent>()
+    val event = _event.receiveAsFlow()
+
     fun onScheduleAlarmClick(
-        from: String,
-        to: String,
-        intervalMillis: Int
+        alarmItem: AlarmItem,
+        isNotificationPermissionGranted: Boolean,
+        canScheduleAlarms: Boolean
     ) {
-        scheduler.schedule(
-            item = AlarmItem(
-                from = from.toLocalTime(),
-                to = to.toLocalTime(),
-                intervalMillis = intervalMillis
-            )
-        )
+        viewModelScope.launch {
+            when {
+                isNotificationPermissionGranted && canScheduleAlarms -> {
+                    scheduler.schedule(alarmItem)
+                }
+                !isNotificationPermissionGranted -> {
+                    _event.send(MainEvent.LaunchNotificationPermissionRequest)
+                }
+                else -> {
+                    _event.send(MainEvent.LaunchAlarmPermissionRequest)
+                }
+
+            }
+        }
     }
 
-    fun onCancelAlarmClick(
-        from: String,
-        to: String,
-        intervalMillis: Int
-    ) {
-        scheduler.cancel(
-            item = AlarmItem(
-                from = from.toLocalTime(),
-                to = to.toLocalTime(),
-                intervalMillis = intervalMillis
-            )
-        )
+    fun onCancelAlarmClick(alarmItem: AlarmItem) {
+        scheduler.cancel(alarmItem)
+    }
+
+    fun onNotificationPermissionResult(canScheduleExactAlarms: Boolean) {
+        viewModelScope.launch {
+            if (!canScheduleExactAlarms) {
+                _event.send(MainEvent.LaunchAlarmPermissionRequest)
+            }
+        }
+
     }
 }

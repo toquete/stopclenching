@@ -4,10 +4,11 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.core.net.toUri
 import com.toquete.stopclenching.infrastructure.receiver.AlarmReceiver
 import com.toquete.stopclenching.model.AlarmItem
-import kotlinx.datetime.LocalTime
+import kotlinx.datetime.toLocalTime
 import java.util.Calendar
 
 class AndroidAlarmScheduler(
@@ -19,36 +20,49 @@ class AndroidAlarmScheduler(
         val initialTimeInMillis = getTimeInMillis(item.from)
         val finalTimeInMillis = getTimeInMillis(item.to)
 
-        for (time in initialTimeInMillis until finalTimeInMillis step item.intervalMillis) {
+        for (time in initialTimeInMillis until finalTimeInMillis step item.intervalMillis.toLong()) {
             alarmManager?.cancel(getPendingIntent(time))
         }
     }
 
-    override fun setDailyRepeating(triggerTimeAtMillis: Int) {
+    override fun setDailyRepeating(triggerTimeAtMillis: Long) {
         alarmManager?.run {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !canScheduleExactAlarms()) {
+                return
+            }
+
             val pendingIntent = getPendingIntent(triggerTimeAtMillis)
 
             cancel(pendingIntent)
             setRepeating(
                 AlarmManager.RTC_WAKEUP,
-                triggerTimeAtMillis.toLong(),
+                triggerTimeAtMillis,
                 AlarmManager.INTERVAL_DAY,
                 pendingIntent
             )
         }
     }
 
-    override fun getTimeInMillis(time: LocalTime): Int {
+    override fun getTimeInMillis(time: String): Long {
+        val localTime = time.toLocalTime()
         val calendar = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, time.hour)
-            set(Calendar.MINUTE, time.minute)
+            set(Calendar.HOUR_OF_DAY, localTime.hour)
+            set(Calendar.MINUTE, localTime.minute)
         }
 
-        return calendar.timeInMillis.toInt()
+        return calendar.timeInMillis
     }
 
-    private fun getPendingIntent(timeAtMillis: Int): PendingIntent {
+    override fun canScheduleExactAlarms(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            alarmManager?.canScheduleExactAlarms() ?: false
+        } else {
+            true
+        }
+    }
+
+    private fun getPendingIntent(timeAtMillis: Long): PendingIntent {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             data = "${AlarmReceiver.SCHEME}://$timeAtMillis".toUri()
         }

@@ -2,9 +2,11 @@ package com.toquete.stopclenching.utils
 
 import com.toquete.stopclenching.model.AlarmItem
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.toLocalTime
 import platform.Foundation.NSCalendar
 import platform.Foundation.NSDateComponents
 import platform.Foundation.NSUUID
+import platform.UserNotifications.UNAuthorizationStatusAuthorized
 import platform.UserNotifications.UNCalendarNotificationTrigger
 import platform.UserNotifications.UNMutableNotificationContent
 import platform.UserNotifications.UNNotificationRequest
@@ -17,7 +19,7 @@ class IOSAlarmScheduler : AlarmScheduler() {
         UNUserNotificationCenter.currentNotificationCenter().removeAllPendingNotificationRequests()
     }
 
-    override fun setDailyRepeating(triggerTimeAtMillis: Int) {
+    override fun setDailyRepeating(triggerTimeAtMillis: Long) {
         UNUserNotificationCenter.currentNotificationCenter().removeAllPendingNotificationRequests()
 
         val content = UNMutableNotificationContent().apply {
@@ -27,8 +29,8 @@ class IOSAlarmScheduler : AlarmScheduler() {
 
         val date = NSDateComponents().apply {
             calendar = NSCalendar.currentCalendar
-            hour = LocalTime.fromMillisecondOfDay(triggerTimeAtMillis).hour.toLong()
-            minute = LocalTime.fromMillisecondOfDay(triggerTimeAtMillis).minute.toLong()
+            hour = LocalTime.fromMillisecondOfDay(triggerTimeAtMillis.toInt()).hour.toLong()
+            minute = LocalTime.fromMillisecondOfDay(triggerTimeAtMillis.toInt()).minute.toLong()
         }
 
         val trigger = UNCalendarNotificationTrigger.triggerWithDateMatchingComponents(date, repeats = true)
@@ -45,7 +47,17 @@ class IOSAlarmScheduler : AlarmScheduler() {
         )
     }
 
-    override fun getTimeInMillis(time: LocalTime): Int {
-        return time.toMillisecondOfDay()
+    override fun getTimeInMillis(time: String): Long {
+        return time.toLocalTime().toMillisecondOfDay().toLong()
+    }
+
+    override fun canScheduleExactAlarms(): Boolean {
+        var canSchedule = false
+
+        UNUserNotificationCenter.currentNotificationCenter().getNotificationSettingsWithCompletionHandler { settings ->
+            canSchedule =  settings?.authorizationStatus == UNAuthorizationStatusAuthorized
+        }
+
+        return canSchedule
     }
 }

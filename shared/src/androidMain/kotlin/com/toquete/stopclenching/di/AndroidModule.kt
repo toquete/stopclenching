@@ -11,10 +11,11 @@ import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
 
 val androidModule = module {
+    single<AlarmManager> { androidContext().getSystemService(AlarmManager::class.java) }
     single<AlarmScheduler> {
         AndroidAlarmScheduler(
             context = androidContext(),
-            alarmManager = androidContext().getSystemService(AlarmManager::class.java)
+            alarmManager = get()
         )
     }
     single<NotificationHelper> { AndroidNotificationHelper(androidContext()) }
