@@ -37,8 +37,6 @@ class AndroidAlarmScheduler(
                 triggerTimeAtMillis
             }
 
-            val pendingIntent = getPendingIntent(triggerTimeAtMillis)
-
             val pendingIntent = getPendingIntent(fixedTriggerTimeAtMillis)
 
             setRepeating(
